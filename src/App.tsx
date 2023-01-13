@@ -1,24 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { server } from "./mock-server";
+import { Button, Spin } from "antd";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 function App() {
+  server();
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getData = () => axios.get("/api/reminders");
+
+  console.log(data);
+
+  useEffect(() => {
+    getData().then((res) => {
+      setData(res.data.reminders);
+      setIsLoading(false);
+    });
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="App">
+        <Spin />
+      </div>
+    );
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Button onClick={getData}>Don't click me</Button>
+      {data.map((d) => (
+        <div key={d}>{d}</div>
+      ))}
     </div>
   );
 }
